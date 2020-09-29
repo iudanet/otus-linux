@@ -11,8 +11,10 @@
     - name: get facts
       setup: # aka gather_facts
     tasks:
-      - name: install python3
-        command: yum install python3
+      - name: Disable SELinux
+        ansible.posix.selinux:
+          state: disabled
+
       - name: template service  watchlog
         template:
           src: "{{ item.src }}"
