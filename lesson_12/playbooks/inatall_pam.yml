@@ -1,0 +1,12 @@
+---
+  - hosts: pam
+    become: true
+    tasks:
+      - name: adduser
+        user:
+          name: "{{ item.name }}"
+          shell: /bin/bash
+        loop: "{{ users }}"
+
+      # - name: config sshd
+      
