@@ -14,10 +14,17 @@ pam:
   vars:
     users: 
       - name: "admin"
-        pass: "$6$rNk.RIawXvIrRsqu$BnyDhW4YFAIzaEeC3dPZw3/fflyaSPizdjYnCKzGb2xScY0F29Q2MNdEvGAtfZvtY1tCXYSM596f.e6jgYANM0"
+        pass: "{{ 'Otus2019' | password_hash('sha512') }}"
+        group: admin
       - name: "user1"
-        pass: "$6$rNk.RIawXvIrRsqu$BnyDhW4YFAIzaEeC3dPZw3/fflyaSPizdjYnCKzGb2xScY0F29Q2MNdEvGAtfZvtY1tCXYSM596f.e6jgYANM0"
+        pass: "{{ 'Otus2019' | password_hash('sha512') }}"
+        group: admin,user1
       - name: "user2"
-        pass: "$6$rNk.RIawXvIrRsqu$BnyDhW4YFAIzaEeC3dPZw3/fflyaSPizdjYnCKzGb2xScY0F29Q2MNdEvGAtfZvtY1tCXYSM596f.e6jgYANM0"
+        pass: "{{ 'Otus2019' | password_hash('sha512') }}"
+        group: user2
+
+
+
+
 
 
