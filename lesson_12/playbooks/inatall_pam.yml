@@ -26,8 +26,10 @@
           - restart ssh
       - name: config time pam
         template:
-          src: ../template/time.conf
-          dest: /etc/security/time.conf
+          src: ../template/test_admin.sh
+          dest: /usr/local/bin/test_login.sh
+          mode: 0777
+
       - name: pam
         community.general.pamd:
           name: sshd
@@ -36,5 +38,6 @@
           module_path: pam_nologin.so
           new_type: account
           new_control: required
-          new_module_path: pam_time.so
+          new_module_path: pam_exec.so
+          module_arguments: /usr/local/bin/test_login.sh
           state: after

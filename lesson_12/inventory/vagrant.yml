@@ -15,13 +15,16 @@ pam:
     users: 
       - name: "admin"
         pass: "{{ 'Otus2019' | password_hash('sha512') }}"
-        group: admin
+        group: ""
       - name: "user1"
         pass: "{{ 'Otus2019' | password_hash('sha512') }}"
-        group: admin,user1
+        group: admin
       - name: "user2"
         pass: "{{ 'Otus2019' | password_hash('sha512') }}"
-        group: user2
+        group: ""
+      - name: "vagrant"
+        pass: "{{ 'Otus2019' | password_hash('sha512') }}"
+        group: "admin"
 
 
 
