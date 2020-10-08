@@ -36,14 +36,60 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 
 ### 1. Запустить nginx на нестандартном порту 3-мя разными способами
 
+1. разершить всем использовать любые порты (стенд nginx01)
+
+    ```bash
+    setsebool -P nis_enabled 1
+    ```
+
+    ```bash
+    [vagrant@nginx01 ~]$ sudo ss -ltpn | grep nginx
+    LISTEN     0      128          *:5199                     *:*                   users:(("nginx",pid=3258,fd=6),("nginx",pid=3257,fd=6))
+    LISTEN     0      128       [::]:5199                  [::]:*                   users:(("nginx",pid=3258,fd=7),("nginx",pid=3257,fd=7))
+    ```
+
+1. добавить конкретный порт в контекст прав nginx (стенд nginx02)
+
+    ```bash
+    semanage port -a -t http_port_t -p tcp {{ nginx_port }}
+    ```
+
+    ```bash
+    [vagrant@nginx02 ~]$ sudo ss -ltpn | grep nginx
+    LISTEN     0      128          *:5199                     *:*                   users:(("nginx",pid=7504,fd=6),("nginx",pid=7503,fd=6))
+    LISTEN     0      128       [::]:5199                  [::]:*                   users:(("nginx",pid=7504,fd=7),("nginx",pid=7503,fd=7))
+    ```
+
+1. создать и добавить модуль из аудит логов. Предварительно выключаем SElinux (```setenforse 0```) и создаем модуль правил из аудит логов. Полсде подключения модуля включаем SELinux (стенд nginx03)
+
+    ```bash
+    audit2allow -M httpd_t --debug  < /var/log/audit/audit.log
+    # checkmodule -M -m -o httpd_t.mod httpd_t.te
+    # semodule_package -o httpd_tp.pp -m httpd_t.mod
+    semodule -i httpd_t.pp
+    ```
+
+    ```bash
+    [vagrant@nginx03 ~]$ sudo ss -ltpn | grep nginx
+    LISTEN     0      128          *:5199                     *:*                   users:(("nginx",pid=7765,fd=6),("nginx",pid=7764,fd=6))
+    LISTEN     0      128       [::]:5199                  [::]:*                   users:(("nginx",pid=7765,fd=7),("nginx",pid=7764,fd=7))
+    ```
+
+Все способы реализованы на стенде из 3 виртуальных машин (на каждый способ по машине), для запуска стенда:
+
+```bash
+cd lesson_13/nginx_selinux
+vagran up
+```
+
 ### 2. Обеспечить работоспособность приложения при включенном selinux
 
 * Развернуть приложенный стенд
 
-```bash
-cd lesson_13/selinux_dns_problems
-vagran up
-```
+    ```bash
+    cd lesson_13/selinux_dns_problems
+    vagran up
+    ```
 
 * Выяснить причину неработоспособности механизма обновления зоны (см. README)
   * Отключил selinux на ns01
