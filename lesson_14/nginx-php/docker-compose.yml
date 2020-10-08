@@ -5,5 +5,7 @@ services:
     build: ./nginx
     ports:
      - 8085:80
+    depends_on:
+      - php-fpm
   php-fpm:
     build: ./php
