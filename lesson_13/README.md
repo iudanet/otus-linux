@@ -36,7 +36,7 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 
 ### 1. Запустить nginx на нестандартном порту 3-мя разными способами
 
-### 2. Обеспечить работоспособность приложения при включенном selinux.
+### 2. Обеспечить работоспособность приложения при включенном selinux
 
 * Развернуть приложенный стенд
 
@@ -85,21 +85,21 @@ vagran up
     1. создать модуль с правилами
 
         ```bash
-        [root@ns01 vagrant]# audit2allow  < /var/log/audit/audit.log 
+        [root@ns01 vagrant]# audit2allow  < /var/log/audit/audit.log
 
 
         #============= named_t ==============
 
         #!!!! WARNING: 'etc_t' is a base type.
         allow named_t etc_t:file { create write };
-        [root@ns01 vagrant]# audit2allow -M named_t --debug  < /var/log/audit/audit.log 
+        [root@ns01 vagrant]# audit2allow -M named_t --debug  < /var/log/audit/audit.log
         ******************** IMPORTANT ***********************
         To make this policy package active, execute:
 
         semodule -i named_t.pp
 
         [root@ns01 vagrant]# semodule -i named_t.pp
-        [root@ns01 vagrant]# cat named_t.te 
+        [root@ns01 vagrant]# cat named_t.te
 
         module named_t 1.0;
 
@@ -119,27 +119,27 @@ vagran up
 
         ```bash
         [root@ns01 named]# semanage fcontext  -l | grep named | grep etc
-        /etc/rndc.*                                        regular file       system_u:object_r:named_conf_t:s0 
-        /etc/unbound(/.*)?                                 all files          system_u:object_r:named_conf_t:s0 
-        /etc/named\.rfc1912.zones                          regular file       system_u:object_r:named_conf_t:s0 
-        /var/named/chroot/etc(/.*)?                        all files          system_u:object_r:etc_t:s0 
-        /var/named/chroot/etc/pki(/.*)?                    all files          system_u:object_r:cert_t:s0 
-        /var/named/chroot/etc/named\.rfc1912.zones         regular file       system_u:object_r:named_conf_t:s0 
-        /etc/named\.conf                                   regular file       system_u:object_r:named_conf_t:s0 
-        /etc/named\.root\.hints                            regular file       system_u:object_r:named_conf_t:s0 
-        /etc/rc\.d/init\.d/named                           regular file       system_u:object_r:named_initrc_exec_t:s0 
-        /etc/rc\.d/init\.d/unbound                         regular file       system_u:object_r:named_initrc_exec_t:s0 
-        /etc/rc\.d/init\.d/named-sdb                       regular file       system_u:object_r:named_initrc_exec_t:s0 
-        /var/named/chroot/etc/rndc\.key                    regular file       system_u:object_r:dnssec_t:s0 
-        /var/named/chroot/etc/localtime                    regular file       system_u:object_r:locale_t:s0 
-        /var/named/chroot/etc/named\.conf                  regular file       system_u:object_r:named_conf_t:s0 
-        /etc/named\.caching-nameserver\.conf               regular file       system_u:object_r:named_conf_t:s0 
-        /var/named/chroot/etc/named\.root\.hints           regular file       system_u:object_r:named_conf_t:s0 
-        /var/named/chroot/etc/named\.caching-nameserver\.conf regular file       system_u:object_r:named_conf_t:s0 
-        /etc/named(/.*)?                                   all files          system_u:object_r:named_zone_t:s0 
+        /etc/rndc.*                                        regular file       system_u:object_r:named_conf_t:s0
+        /etc/unbound(/.*)?                                 all files          system_u:object_r:named_conf_t:s0
+        /etc/named\.rfc1912.zones                          regular file       system_u:object_r:named_conf_t:s0
+        /var/named/chroot/etc(/.*)?                        all files          system_u:object_r:etc_t:s0
+        /var/named/chroot/etc/pki(/.*)?                    all files          system_u:object_r:cert_t:s0
+        /var/named/chroot/etc/named\.rfc1912.zones         regular file       system_u:object_r:named_conf_t:s0
+        /etc/named\.conf                                   regular file       system_u:object_r:named_conf_t:s0
+        /etc/named\.root\.hints                            regular file       system_u:object_r:named_conf_t:s0
+        /etc/rc\.d/init\.d/named                           regular file       system_u:object_r:named_initrc_exec_t:s0
+        /etc/rc\.d/init\.d/unbound                         regular file       system_u:object_r:named_initrc_exec_t:s0
+        /etc/rc\.d/init\.d/named-sdb                       regular file       system_u:object_r:named_initrc_exec_t:s0
+        /var/named/chroot/etc/rndc\.key                    regular file       system_u:object_r:dnssec_t:s0
+        /var/named/chroot/etc/localtime                    regular file       system_u:object_r:locale_t:s0
+        /var/named/chroot/etc/named\.conf                  regular file       system_u:object_r:named_conf_t:s0
+        /etc/named\.caching-nameserver\.conf               regular file       system_u:object_r:named_conf_t:s0
+        /var/named/chroot/etc/named\.root\.hints           regular file       system_u:object_r:named_conf_t:s0
+        /var/named/chroot/etc/named\.caching-nameserver\.conf regular file       system_u:object_r:named_conf_t:s0
+        /etc/named(/.*)?                                   all files          system_u:object_r:named_zone_t:s0
         ```
 
-  * в текущем стенде реализовано добавление контекста к папке, так как это дает меньше прав для приложения нежели модуль дающий права писать в любую папку /etc. Добавленный код для провиженинга ниже.
+  * в текущем стенде реализовано добавление контекста к папке, так как это дает меньше прав для приложения нежели модуль дающий права писать в любую папку /etc. Добавленный код для деплоя стенда  ниже.(выставляем новый контекст всем файлам в папке /etc/named и применяем изменения на текущих файлах )
 
     ```yaml
     - hosts: ns01 # server ns01 provision
