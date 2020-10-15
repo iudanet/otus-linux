@@ -4,14 +4,7 @@
   become: true
   roles:
   - cloudalchemy.prometheus
-  vars:
-    prometheus_targets:
-      node:
-      - targets:
-        - 192.168.50.10:9100
-        - 192.168.50.20:9100
-        labels:
-          env: otus
+
 - hosts: node
   become: true
   roles:
