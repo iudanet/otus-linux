@@ -9,3 +9,5 @@ roles:
 
   - name: cloudalchemy.prometheus
     version: 2.16.0
+  - name: cloudalchemy.grafana
+    version: 0.18.0
