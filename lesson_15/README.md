@@ -27,4 +27,9 @@
 ### Запуск Стенда
 
 ```bash
+cd lesson_15
+source venv/bin/activate
+ansible -i inventory/vagrant.yml -m ping all
+ansible-galaxy install -r requirements.yml -f
+ansible-playbook -i inventory/vagrant.yml  playbooks/inatall_monitoring.yml 
 ```
