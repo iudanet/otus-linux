@@ -31,6 +31,13 @@
 ### Запуск Стенда
 
 ```bash
-vagrant up
+cd lesson_16
+python3.8 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 
+vagrant up
+ansible -i inventory/vagrant.yml -m ping all
+ansible-playbook -i inventory/vagrant.yml playbooks/install_logging.yml
 ```

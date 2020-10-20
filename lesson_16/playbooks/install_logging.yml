@@ -39,11 +39,3 @@
         src: ../template/syslog-client.conf
         dest: /etc/rsyslog.d/client.conf
       notify: restart rsyslog
-# web_servers:
-#   hosts:
-#     nginx:
-# rsyslog_server:
-#   hosts:
-#     syslog:
-
-# rsyslog_clients:
