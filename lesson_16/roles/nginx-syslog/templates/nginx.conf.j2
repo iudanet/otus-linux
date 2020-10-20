@@ -20,8 +20,8 @@ http {
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
     access_log  /var/log/nginx/access.log  main;
-    access_log syslog:server={{ syslog_server }}:{{ syslog_port | default("514") }};
-    error_log syslog:server={{ syslog_server }}:{{ syslog_port | default("514") }};
+    access_log syslog:server={{ syslog_server | default("127.0.0.1") }}:{{ syslog_port | default("514") }};
+    error_log syslog:server={{ syslog_server | default("127.0.0.1") }}:{{ syslog_port | default("514") }};
     error_log  /var/log/nginx/error.log;
 
     sendfile            on;

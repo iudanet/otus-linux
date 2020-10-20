@@ -6,6 +6,7 @@
       ansible.builtin.yum:
         name:
           - rsyslog
+          - tree
         state: present
 - hosts: web_servers
   become: true
@@ -14,10 +15,30 @@
 
 - hosts: rsyslog_server
   become: true
+  handlers:
+    - name: restart rsyslog
+      systemd:
+        name: rsyslog
+        state: restarted
   tasks:
     - name: config server
       template:
-
+        src: ../template/syslog-server.conf
+        dest: /etc/rsyslog.d/server.conf
+      notify: restart rsyslog
+- hosts: rsyslog_clients
+  become: true
+  handlers:
+    - name: restart rsyslog
+      systemd:
+        name: rsyslog
+        state: restarted
+  tasks:
+    - name: config server
+      template:
+        src: ../template/syslog-client.conf
+        dest: /etc/rsyslog.d/client.conf
+      notify: restart rsyslog
 # web_servers:
 #   hosts:
 #     nginx:
