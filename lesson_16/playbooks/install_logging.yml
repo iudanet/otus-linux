@@ -1,1 +1,28 @@
 ---
+- hosts: all
+  become: true
+  tasks:
+    - name: install rsyslog
+      ansible.builtin.yum:
+        name:
+          - rsyslog
+        state: present
+- hosts: web_servers
+  become: true
+  roles:
+    - nginx-syslog
+
+- hosts: rsyslog_server
+  become: true
+  tasks:
+    - name: config server
+      template:
+
+# web_servers:
+#   hosts:
+#     nginx:
+# rsyslog_server:
+#   hosts:
+#     syslog:
+
+# rsyslog_clients:
