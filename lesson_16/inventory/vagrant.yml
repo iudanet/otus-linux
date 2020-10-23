@@ -29,3 +29,7 @@ rsyslog_clients:
   hosts:
     nginx:
     elk:
+
+elk_server:
+  hosts:
+    elk:

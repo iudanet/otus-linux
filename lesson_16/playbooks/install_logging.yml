@@ -2,12 +2,31 @@
 - hosts: all
   become: true
   tasks:
-    - name: install rsyslog
+    - name: add repo elk
+      yum_repository:
+        name: elasticsearch-7.x
+        description: Elasticsearch repository for 7.x packages
+        file: elasticsearch
+        baseurl: https://artifacts.elastic.co/packages/7.x/yum
+        gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        gpgcheck: true
+        enabled: true
+
+    - name: add key repo
+      become: true
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+    - name: install pkg logs
       ansible.builtin.yum:
         name:
           - rsyslog
           - tree
+          - filebeat
+
         state: present
+    
 - hosts: web_servers
   become: true
   roles:
@@ -39,3 +58,47 @@
         src: ../template/syslog-client.conf
         dest: /etc/rsyslog.d/client.conf
       notify: restart rsyslog
+
+- hosts: elk_server
+  become: true
+  handlers:
+    - name: restart kibana
+      systemd:
+        name: kibana
+        state: restarted
+
+    - name: restart logstash
+      systemd:
+        name: logstash
+        state: restarted
+  tasks:
+    - name: install pkg
+      yum: 
+        name:
+          - java-1.8.0-openjdk-devel 
+          - java-1.8.0-openjdk
+          - elasticsearch
+          - kibana
+          - logstash
+    - name: config kibana
+      template:
+        src: ../template/kibana.yml
+        dest: /etc/kibana/kibana.yml
+      notify: restart kibana
+    - name: config logstash
+      template:
+        src: "{{ item }}"
+        dest: "/etc/logstash/conf.d"
+      with_fileglob:
+        - ../template/logstash/*.conf
+      notify: restart logstash
+    - name: enable elk
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - kibana
+        - elasticsearch
+        - logstash
+  
