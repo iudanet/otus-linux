@@ -1,6 +1,11 @@
 ---
 - hosts: all
   become: true
+  handlers:
+    - name: restart filebeat
+      systemd:
+        name: filebeat
+        state: restarted
   tasks:
     - name: add repo elk
       yum_repository:
@@ -24,13 +29,29 @@
           - rsyslog
           - tree
           - filebeat
-
         state: present
-    
+
+    - name: config filebeat
+      template:
+        src: ../template/filebeat.yml
+        dest: /etc/filebeat/filebeat.yml
+      notify: restart filebeat
+
 - hosts: web_servers
   become: true
+  handlers:
+    - name: restart filebeat
+      systemd:
+        name: filebeat
+        state: restarted
   roles:
     - nginx-syslog
+  tasks:
+    - name: config filebeat
+      template:
+        src: ../template/filebeat-nginx.yml
+        dest: /etc/filebeat/modules.d/nginx.yml
+      notify: restart filebeat
 
 - hosts: rsyslog_server
   become: true
@@ -80,11 +101,13 @@
           - elasticsearch
           - kibana
           - logstash
+
     - name: config kibana
       template:
         src: ../template/kibana.yml
         dest: /etc/kibana/kibana.yml
       notify: restart kibana
+
     - name: config logstash
       template:
         src: "{{ item }}"
@@ -92,6 +115,7 @@
       with_fileglob:
         - ../template/logstash/*.conf
       notify: restart logstash
+
     - name: enable elk
       systemd:
         name: "{{ item }}"
