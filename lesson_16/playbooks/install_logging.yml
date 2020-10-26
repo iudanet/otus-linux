@@ -23,12 +23,18 @@
         state: present
         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
+    - name: install epel-release
+      ansible.builtin.yum:
+        name:
+          - epel-release
+
     - name: install pkg logs
       ansible.builtin.yum:
         name:
           - rsyslog
           - tree
           - filebeat
+          - htop
         state: present
 
     - name: config filebeat
