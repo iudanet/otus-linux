@@ -18,6 +18,8 @@ MACHINES = {
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
                    {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
                    {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
+                   {ip: '192.168.255.5', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "router-office1"},
+                   {ip: '192.168.255.9', adapter: 7, netmask: "255.255.255.252", virtualbox__intnet: "router-office2"},
                 ]
   },
   
@@ -25,11 +27,52 @@ MACHINES = {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {adapter: 3, auto_config: false, virtualbox__intnet: true},
-                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+                   {ip: '192.168.0.34', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
+                   {ip: '192.168.0.66', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
                 ]
   },
-  
+
+  :office1Router => {
+    :box_name => "centos/7",
+    :net => [
+               {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-office1"},
+               {ip: '192.168.2.1', adapter: 3, netmask: "255.255.255.192", virtualbox__intnet: "office1-net1"},
+               {ip: '192.168.2.65', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "office1-net2"},
+               {ip: '192.168.2.129', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "office1-net3"},
+               {ip: '192.168.2.193', adapter: 6, netmask: "255.255.255.192", virtualbox__intnet: "office1-net4"},
+
+            ]
+},
+
+  :office1Server => {
+    :box_name => "centos/7",
+    :net => [
+                {ip: '192.168.2.2', adapter: 2, netmask: "255.255.255.192", virtualbox__intnet: "office1-net1"},
+                {ip: '192.168.2.66', adapter: 3, netmask: "255.255.255.192", virtualbox__intnet: "office1-net2"},
+                {ip: '192.168.2.130', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "office1-net3"},
+                {ip: '192.168.2.194', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "office1-net4"},
+            ]
+},
+
+:office2Router => {
+    :box_name => "centos/7",
+    :net => [
+                {ip: '192.168.255.10', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-office2"},
+                {ip: '192.168.1.1', adapter: 3, netmask: "255.255.255.128", virtualbox__intnet: "office2-net1"},
+                {ip: '192.168.1.129', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "office2-net2"},
+                {ip: '192.168.1.194', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "office2-net3"},
+            ]
+},
+
+  :office2Server => {
+    :box_name => "centos/7",
+    :net => [
+                {ip: '192.168.1.2', adapter: 2, netmask: "255.255.255.128", virtualbox__intnet: "office2-net1"},
+                {ip: '192.168.1.130', adapter: 3, netmask: "255.255.255.192", virtualbox__intnet: "office2-net2"},
+                {ip: '192.168.1.195', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "office2-net3"},
+            ]
+},
+
 }
 
 Vagrant.configure("2") do |config|
@@ -59,19 +102,30 @@ Vagrant.configure("2") do |config|
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             sysctl net.ipv4.conf.all.forwarding=1
             iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+            sudo ip route add 192.168.0.0/24 via 192.168.255.2
             SHELL
         when "centralRouter"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
-            sysctl net.ipv4.conf.all.forwarding=1
+            sudo sysctl net.ipv4.conf.all.forwarding=1
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
             echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
+            ip ro
+            sudo systemctl status network
+            sudo systemctl restart network
+            sudo systemctl status network
+            sudo /etc/rc.d/init.d/network restart
+            ip ro
             SHELL
         when "centralServer"
           box.vm.provision "shell", run: "always", inline: <<-SHELL
             echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
             echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
+            ip ro
+            sudo systemctl status network
+            sudo systemctl restart network
+            sudo systemctl status network
+            sudo /etc/rc.d/init.d/network restart
+            ip ro
             SHELL
         end
 
