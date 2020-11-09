@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - yum:
+        name:
+          - libselinux-python
+          - python-gobject 
+          - NetworkManager-glib
+
+- hosts: routers
+  become: true
+  tasks:
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+    - name: config DEFROUTE
+      lineinfile:
+        path: /etc/sysconfig/network-scripts/ifcfg-eth0
+        regexp: '^DEFROUTE='
+        line: "DEFROUTE={{ DEFROUTE_ROUTE | default('yes') }}"
+
+
+        #     echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+        #     echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
