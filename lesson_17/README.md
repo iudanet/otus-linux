@@ -96,3 +96,30 @@ Office2----/
 |192.168.255.0/30 | 2| 192.168.255.3 |point to point  | centralRO - inetRO
 |192.168.255.4/30 | 2| 192.168.255.7 |point to point  | centralRO - Ofise1RO
 |192.168.255.8/30 | 2| 192.168.255.11 |point to point  | centralRO - Ofise2RO
+
+### Запуск стенда
+
+- установка Ansible
+
+    ```bash
+    cd lesson_17
+    python3.8 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+
+- Запуск виртуальных машин и настройка окружения. В связи с тем, что странно себя ведет перезагрузка network
+  - окружение запускается 13 минут
+
+    ```bash
+    make install
+    ```
+
+- Запуск теста доступности, проверяет доступность IP  с разных хостов другие
+ хосты и интернет + трасировка.
+  - тест проверяется минуту
+
+    ```bash
+    make test
+    ```
