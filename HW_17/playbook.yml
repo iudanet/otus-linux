@@ -1,0 +1,6 @@
+---
+- name: backup
+  become: true
+  hosts: all
+  roles:
+    - fiaasco.borgbackup
