@@ -1,0 +1,22 @@
+---
+borgbackup_passphrase: "Otus2020"
+# borgbackup_appendonly: true
+borgbackup_servers:
+  - fqdn: app1.ott
+    user: borgbackup
+    type: normal
+    home: /mnt/hdd/borg_backup/
+    pool: repos
+    options: ""
+borgbackup_include:
+  - "/etc"
+  - "/root"
+  - "/home"
+  - "/opt"
+
+borgbackup_retention:
+  hourly: 2
+  daily: 7
+  weekly: 4
+  monthly: 4
+  yearly: 1
