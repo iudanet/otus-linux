@@ -1,6 +1,31 @@
 ---
-- name: backup
-  become: true
+- name: all
   hosts: all
+  become: true
+  tasks:
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+
+    - name: DNS hosts server
+      lineinfile:
+        path: "/etc/hosts"
+        regexp: "^192.168.50.10"
+        line: "192.168.50.10 server"
+    - name: DNS hosts client
+      lineinfile:
+        path: "/etc/hosts"
+        regexp: "^192.168.50.20"
+        line: "192.168.50.20 client"
+
+- name: borgbackup_servers
+  become: true
+  hosts: borgbackup_servers
+  roles:
+    - fiaasco.borgbackup
+
+- name: borgbackup_client
+  become: true
+  hosts: borgbackup_client
   roles:
     - fiaasco.borgbackup
