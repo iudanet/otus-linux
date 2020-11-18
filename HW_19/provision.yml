@@ -1,0 +1,128 @@
+---
+- name: pxeserver
+  hosts: pxeserver
+  become: true
+  tasks: 
+    - name: repl install
+      yum:
+        name: epel-release
+
+    - name: yum install
+      yum:
+        name:
+          - dhcp-server
+          - tftp-server
+          - syslinux-tftpboot.noarch
+    - name: firewalld enable
+      ansible.posix.firewalld:
+        service: tftp
+        permanent: yes
+        state: enabled
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+    - name: template dhcpd
+      template:
+        dest: /etc/dhcp/dhcpd.conf
+        src: templates/dhcpd.conf
+        mode: '0644'
+    - name: dhcpd start
+      systemd:
+        name: dhcpd
+        state: started
+
+    - name: tftp start
+      systemd:
+        name: tftp.service
+        state: started
+
+    - name: create directory
+      file:
+        path: "{{ item }}"
+        state: directory
+        recurse: yes
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - /var/lib/tftpboot/pxelinux/images/CentOS-8.2
+        - /var/lib/tftpboot/pxelinux/pxelinux.cfg
+    - name: Ansible copy file to remote server
+      copy:
+        src: "{{ item }}"
+        dest: /var/lib/tftpboot/pxelinux
+        remote_src: true
+      loop:
+       - /tftpboot/pxelinux.0
+       - /tftpboot/libutil.c32
+       - /tftpboot/menu.c32
+       - /tftpboot/libmenu.c32
+       - /tftpboot/ldlinux.c32
+       - /tftpboot/vesamenu.c32
+    - name: template pxe default
+      template:
+        dest: /var/lib/tftpboot/pxelinux/pxelinux.cfg/default
+        src: templates/default
+        mode: '0644'
+    - name: get images
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+      loop:
+        - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/initrd.img
+          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/initrd.img
+        - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/vmlinuz
+          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/vmlinuz
+# - name: all
+#   hosts: all
+#   become: true
+#   tasks:
+
+
+#     - name: DNS hosts server
+#       lineinfile:
+#         path: "/etc/hosts"
+#         regexp: "^192.168.50.10"
+#         line: "192.168.50.10 server"
+#     - name: DNS hosts client
+#       lineinfile:
+#         path: "/etc/hosts"
+#         regexp: "^192.168.50.20"
+#         line: "192.168.50.20 client"
+#     - name: install rsync
+#       yum:
+#         name: rsync
+
+# - name: server
+#   hosts: server
+#   become: true
+#   tasks:
+#     - name: Create a new ext4 primary partition
+#       community.general.parted:
+#         device: /dev/sdb
+#         number: 1
+#         state: present
+#         fs_type: ext4
+#     - name: Create a ext4 filesystem on /dev/sdb1
+#       community.general.filesystem:
+#         fstype: ext4
+#         dev: /dev/sdb1
+#     - name: Mount up device by label
+#       ansible.posix.mount:
+#         path: /var/backup
+#         src: /dev/sdb1
+#         fstype: ext4
+#         state: mounted
+
+# - name: borgbackup_servers
+#   become: true
+#   hosts: borgbackup_servers
+#   roles:
+#     - fiaasco.borgbackup
+
+# - name: borgbackup_client
+#   become: true
+#   hosts: borgbackup_client
+#   roles:
+#     - fiaasco.borgbackup
