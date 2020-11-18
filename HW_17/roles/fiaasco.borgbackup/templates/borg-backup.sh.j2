@@ -97,6 +97,7 @@ if [ "$1" = "backup" ]; then
 {%     if not borgbackup_appendonly %}
         echo "Pruning old backups on {{ b.fqdn }} :"
         {{ borgbackup_binary }} prune -v {{ b.options }}{{
+            " --keep-last " ~ borgbackup_retention.last ~ 
             " -H " ~ borgbackup_retention.hourly ~
             " -d " ~ borgbackup_retention.daily ~
             " -w " ~ borgbackup_retention.weekly ~

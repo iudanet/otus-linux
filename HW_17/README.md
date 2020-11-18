@@ -24,7 +24,6 @@ cd HW_17
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
-ansible-galaxy install -r requirements.yml
 vagrant up
 ```
 
@@ -117,4 +116,10 @@ drwxr-xr-x.  2 root root   4.0K Apr 30  2020 alternatives
 drwxr-x---.  3 root root     43 Apr 30  2020 audisp
 ...
 
+```
+
+- политика очистки
+
+```bash
+/usr/local/bin/borg prune -v  --keep-last 10 -H 2 -d 93 -w 12 -m 12 -y 1 $REPOSITORY
 ```

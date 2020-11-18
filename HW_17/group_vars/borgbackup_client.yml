@@ -4,7 +4,6 @@ borgbackup_cron_day: "*"
 borgbackup_cron_minute: "*/5"
 borgbackup_cron_hour: "*"
 borgbackup_passphrase: "Otus2020"
-borgbackup_appendonly: true
 # borgbackup_appendonly: true
 borgbackup_servers:
   - fqdn: server
@@ -20,7 +19,8 @@ borgbackup_include:
   - "/opt"
 
 borgbackup_retention:
-  hourly: 0
+  last: 10
+  hourly: 2
   daily: 93
   weekly: 12
   monthly: 12

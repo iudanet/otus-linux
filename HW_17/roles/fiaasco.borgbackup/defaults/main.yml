@@ -78,6 +78,7 @@ borgbackup_exclude: []
 # description: backup retention configuration
 # type: dict
 borgbackup_retention:
+  last: 10
   hourly: 12
   daily: 7
   weekly: 4
