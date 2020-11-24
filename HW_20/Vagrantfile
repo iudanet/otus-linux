@@ -16,29 +16,31 @@ MACHINES = {
         :net => [
                    {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
-                   {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
-                   {ip: '192.168.0.17', adapter: 8, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
+                   {ip: '192.168.255.6', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"}
                 ]
   },
   
   :centralServer => {
         :box_name => "centos/7",
         :net => [
-                   {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {ip: '192.168.0.34', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
-                   {ip: '192.168.0.66', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
-                   {ip: '192.168.0.18', adapter: 5, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
-                   {ip: '192.168.0.50', adapter: 6, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
-                   {ip: '192.168.0.130', adapter: 7, netmask: "255.255.255.128", virtualbox__intnet: "central-newnet1"},  
+                   {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"}
                 ]
-  }
+  },
+  :inetRouter2 => {
+        :box_name => "centos/7",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.50.10', adapter: 2},
+                   {ip: '192.168.255.5', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"}
+                ]
+  } 
 }
 
 Vagrant.configure("2") do |config|
 
   MACHINES.each do |boxname, boxconfig|
     config.vm.define boxname do |box|
+        box.vm.synced_folder ".", "/vagrant", disabled: true
         box.vm.box = boxconfig[:box_name]
         box.vm.host_name = boxname.to_s
 
@@ -60,9 +62,11 @@ Vagrant.configure("2") do |config|
             ansible.groups = { 
                 "all" => [  "centralServer", 
                             "centralRouter", 
-                            "inetRouter"
+                            "inetRouter",
+                            "inetRouter2"
                         ],
                 "routers" => [
+                                "inetRouter2",
                                 "centralRouter"
                             ],
                 "servers" => [ 
