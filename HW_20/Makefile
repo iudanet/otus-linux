@@ -15,19 +15,19 @@ up::
 test::
 	@echo "############## RUN TEST in inetRouter"
 	@vagrant ssh inetRouter -c "fping -q $(SERVERS)"
-	@vagrant ssh inetRouter -c "curl -Is  192.168.0.2  | head -n 1"
+	@vagrant ssh inetRouter -c "nc -zv 192.168.0.2 8080"
 
 						
 	@echo "############## RUN TEST in centralServer"
 	@vagrant ssh centralServer -c "fping -q $(SERVERS)"
 	@vagrant ssh centralServer -c "mtr -n -r -c 1 ya.ru"
-	@vagrant ssh centralServer -c "curl -Is  192.168.0.2  | head -n 1"
+	@vagrant ssh centralServer -c "nc -zv 192.168.0.2 8080"
 
 	
 	@echo "############## RUN TEST in inetRouter2"
 	@vagrant ssh inetRouter2 -c "fping -q $(SERVERS)"
-	@vagrant ssh inetRouter2 -c "curl -Is  192.168.0.2  | head -n 1"
+	@vagrant ssh inetRouter2 -c "nc -zv 192.168.0.2 8080"
 
 	@echo "############## RUN TEST in localhost to 192.168.50.10"
-	@curl -Is 192.168.50.10 | head -n 1
+	curl -I 192.168.50.10 
 	@echo "Test ok" 

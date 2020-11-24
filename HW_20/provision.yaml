@@ -13,6 +13,7 @@
           - libselinux-python
           - mtr
           - tcpdump
+          - nc
 
 - hosts: routers
   become: true
@@ -83,7 +84,7 @@
         match: tcp
         destination_port: "80"
         jump: DNAT
-        to_destination: "192.168.0.2:80"
+        to_destination: "192.168.0.2:8080"
         comment: Redirect web traffic to port 8080
       notify:
         - save iptables
@@ -137,6 +138,11 @@
       systemd:
         name: NetworkManager
         state: restarted
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+
   become: true
   tasks:
     - name: yum install
@@ -163,6 +169,13 @@
       when: lineinfile | default('', false)
       notify:
         - restart network
+    - name: config  nginx 8080
+      lineinfile:
+        path: "/etc/nginx/nginx.conf"
+        regexp: "listen       80 default_server;"
+        line: "listen 8080 default_server;"
+      notify:
+        - restart nginx
 
 
 - hosts: all
