@@ -1,0 +1,83 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+:inetRouter => {
+        :box_name => "centos/6",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                ]
+  },
+  :centralRouter => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
+                   {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
+                   {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
+                   {ip: '192.168.0.17', adapter: 8, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
+                ]
+  },
+  
+  :centralServer => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
+                   {ip: '192.168.0.34', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
+                   {ip: '192.168.0.66', adapter: 4, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
+                   {ip: '192.168.0.18', adapter: 5, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
+                   {ip: '192.168.0.50', adapter: 6, netmask: "255.255.255.240", virtualbox__intnet: "central-newnet1"},
+                   {ip: '192.168.0.130', adapter: 7, netmask: "255.255.255.128", virtualbox__intnet: "central-newnet1"},  
+                ]
+  }
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        box.vm.provision 'ansible' do |ansible|
+            # ansible.verbose = "v"
+            ansible.groups = { 
+                "all" => [  "centralServer", 
+                            "centralRouter", 
+                            "inetRouter"
+                        ],
+                "routers" => [
+                                "centralRouter"
+                            ],
+                "servers" => [ 
+                              "centralServer"
+                            ]
+
+            }
+            ansible.become = true
+            ansible.host_key_checking = false
+            ansible.playbook = "provision.yaml"
+        end
+
+      end
+
+  end
+  
+  
+end
