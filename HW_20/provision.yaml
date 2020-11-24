@@ -51,6 +51,42 @@
       notify:
         - restart network
 
+   # iptables -t nat -A PREROUTING -p tcp -d $EXT_R_IP --dport $PORT1 -j DNAT --to-destination $LOCAL_IP:$PORT2
+        # iptables -A FORWARD -i eth0 -d $LOCAL_IP -p tcp --dport $PORT2 -j ACCEPT
+- hosts: inetRouter2
+  become: true
+  handlers:
+    - name: save iptables
+      community.general.iptables_state:
+        state: saved
+        path: /etc/sysconfig/iptables
+  tasks:
+    # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: 'eth2'
+        source: '0.0.0.0/0'
+        destination: '192.168.0.2/32'
+        jump: MASQUERADE
+        protocol: 'tcp'
+        comment: Ansible NAT Masquerade
+      notify:
+        - save iptables
+    - name: forvording 80 to 8080
+      iptables:
+        table: nat
+        chain: PREROUTING
+        in_interface: eth1
+        protocol: tcp
+        match: tcp
+        destination_port: "80"
+        jump: DNAT
+        to_destination: "192.168.0.2:80"
+        comment: Redirect web traffic to port 8080
+      notify:
+        - save iptables
 
 - hosts: inetRouter
   become: true
@@ -108,11 +144,15 @@
         name:
           - tmux
           - NetworkManager-config-routing-rules
+          - nginx
     - name: start and enable NetworkManager-dispatcher
       systemd:
-        name: NetworkManager-dispatcher
+        name: "{{ item }}"
         state: started
         enabled: true
+      loop:
+        - nginx
+        - NetworkManager-dispatcher
     - name: config lineinfile 
       lineinfile:
         path: "{{ item.path }}"

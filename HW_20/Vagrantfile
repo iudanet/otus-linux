@@ -65,6 +65,10 @@ Vagrant.configure("2") do |config|
                             "inetRouter",
                             "inetRouter2"
                         ],
+                "inetRouters" => [
+                  "inetRouter2",
+                  "inetRouter"
+                ],
                 "routers" => [
                                 "inetRouter2",
                                 "centralRouter"
