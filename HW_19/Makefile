@@ -1,5 +1,5 @@
 install:: 
-	@ansible-playbook  -v -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yml
+	@ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yml
 stop::
 	@vagrant destroy -f
 up::

@@ -1,6 +1,18 @@
 ---
 - name: pxeserver
   hosts: pxeserver
+
+  handlers:
+    - name: start nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: True
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+
   become: true
   tasks: 
     - name: repl install
@@ -64,13 +76,48 @@
         dest: /var/lib/tftpboot/pxelinux/pxelinux.cfg/default
         src: templates/default
         mode: '0644'
-    - name: get images
-      ansible.builtin.get_url:
-        url: "{{ item.url }}"
-        dest: "{{ item.dest }}"
+    # - name: get images
+    #   ansible.builtin.get_url:
+    #     url: "{{ item.url }}"
+    #     dest: "{{ item.dest }}"
+    #     mode: '0644'
+    #   loop:
+    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/initrd.img
+    #       dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/initrd.img
+    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/vmlinuz
+    #       dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/vmlinuz
+    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/boot.iso
+    #       dest: /var/lib/tftpboot/boot.iso
+
+
+    - name: Add epel-release repo
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+      notify:
+        - start nginx
+
+    # - name: config nginx
+    #   template:
+    #     src: nginx.conf.j2
+    #     dest: /etc/nginx/nginx.conf
+    #   notify:
+    #     - reload nginx
+
+    - name: enable systemd nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: True
+    - name: template ks.cfg
+      template:
+        dest: /usr/share/nginx/html/ks.cfg
+        src: templates/ks.cfg
         mode: '0644'
-      loop:
-        - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/initrd.img
-          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/initrd.img
-        - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/vmlinuz
-          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/vmlinuz
+
+        # /usr/share/nginx/html
