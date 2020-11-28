@@ -32,6 +32,18 @@
       loop:
        - net.ipv6.conf.all.forwarding
        - net.ipv4.conf.all.forwarding
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '0'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+        - net.ipv4.conf.all.rp_filter
+        - net.ipv4.conf.default.rp_filter
+        - net.ipv4.conf.eth1.rp_filter
+        - net.ipv4.conf.eth2.rp_filter
     - name: enable ospfd
       template:
         src: ./template/daemons
@@ -42,7 +54,7 @@
       notify:
        - reload frr
 
-    - name: enable ospfd
+    - name: config ospfd
       template:
         src: ./template/ospfd.conf
         dest: /etc/frr/ospfd.conf
@@ -52,7 +64,16 @@
         backup: true
       notify:
        - reload frr
-
+    - name: config zebra
+      template:
+        src: ./template/zebra.conf
+        dest: /etc/frr/zebra.conf
+        owner: frr
+        group: frr
+        mode: '0600'
+        backup: true
+      notify:
+       - reload frr
     - name: start and enable frr
       systemd:
         name: frr
