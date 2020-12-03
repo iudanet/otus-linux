@@ -1,6 +1,7 @@
 ---
 - name: pxeserver
   hosts: pxeserver
+  become: true
 
   handlers:
     - name: start nginx
@@ -13,7 +14,6 @@
         name: nginx
         state: reloaded
 
-  become: true
   tasks: 
     - name: repl install
       yum:
@@ -25,6 +25,7 @@
           - dhcp-server
           - tftp-server
           - syslinux-tftpboot.noarch
+
     - name: firewalld enable
       ansible.posix.firewalld:
         service: tftp
@@ -33,11 +34,13 @@
     - name: Disable SELinux
       ansible.posix.selinux:
         state: disabled
+
     - name: template dhcpd
       template:
         dest: /etc/dhcp/dhcpd.conf
         src: templates/dhcpd.conf
         mode: '0644'
+
     - name: dhcpd start
       systemd:
         name: dhcpd
@@ -55,10 +58,12 @@
         recurse: yes
         owner: root
         group: root
-        mode: '0755'
+        # mode: '0755'
       loop:
         - /var/lib/tftpboot/pxelinux/images/CentOS-8.2
         - /var/lib/tftpboot/pxelinux/pxelinux.cfg
+        - /usr/share/nginx/html/auto-install
+
     - name: Ansible copy file to remote server
       copy:
         src: "{{ item }}"
@@ -71,29 +76,26 @@
        - /tftpboot/libmenu.c32
        - /tftpboot/ldlinux.c32
        - /tftpboot/vesamenu.c32
+
     - name: template pxe default
       template:
         dest: /var/lib/tftpboot/pxelinux/pxelinux.cfg/default
         src: templates/default
         mode: '0644'
-    # - name: get images
-    #   ansible.builtin.get_url:
-    #     url: "{{ item.url }}"
-    #     dest: "{{ item.dest }}"
-    #     mode: '0644'
-    #   loop:
-    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/initrd.img
-    #       dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/initrd.img
-    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/pxeboot/vmlinuz
-    #       dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/vmlinuz
-    #     - url: http://ftp.mgts.by/pub/CentOS/8.2.2004/BaseOS/x86_64/os/images/boot.iso
-    #       dest: /var/lib/tftpboot/boot.iso
 
-
-    - name: Add epel-release repo
-      yum:
-        name: epel-release
-        state: present
+    - name: get images
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+        force: False
+      loop:
+        - url: https://mirror.yandex.ru/centos/8.2.2004/BaseOS/x86_64/os/images/pxeboot/initrd.img
+          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/initrd.img
+        - url: https://mirror.yandex.ru/centos/8.2.2004/BaseOS/x86_64/os/images/pxeboot/vmlinuz
+          dest: /var/lib/tftpboot/pxelinux/images/CentOS-8.2/vmlinuz
+        - url: https://mirror.yandex.ru/centos/8.2.2004/isos/x86_64/CentOS-8.2.2004-x86_64-minimal.iso
+          dest: /var/lib/tftpboot/CentOS-8.2.2004-x86_64-minimal.iso
 
     - name: Install nginx
       yum:
@@ -102,22 +104,22 @@
       notify:
         - start nginx
 
-    # - name: config nginx
-    #   template:
-    #     src: nginx.conf.j2
-    #     dest: /etc/nginx/nginx.conf
-    #   notify:
-    #     - reload nginx
-
     - name: enable systemd nginx
       systemd:
         name: nginx
         state: started
         enabled: True
+
     - name: template ks.cfg
       template:
         dest: /usr/share/nginx/html/ks.cfg
         src: templates/ks.cfg
         mode: '0644'
-
-        # /usr/share/nginx/html
+    - name: Mount iso read-only
+      ansible.posix.mount:
+        path: /usr/share/nginx/html/auto-install
+        src: /var/lib/tftpboot/CentOS-8.2.2004-x86_64-minimal.iso
+        fstype: iso9660
+        opts: ro
+        state: mounted
+        # 

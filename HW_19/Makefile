@@ -3,4 +3,7 @@ install::
 stop::
 	@vagrant destroy -f
 up::
-	@vagrant up
+	@vagrant up pxeserver
+
+up-client::
+	@vagrant up pxeclient
