@@ -28,7 +28,6 @@
 * [Домашняя работа №19 (DHCP, PXE)](HW_19/README.md)
 * [Домашняя работа №20 (iptables)](HW_20/README.md)
 * [Домашняя работа №21 (OSPF)](HW_21/README.md)
-* [Домашняя работа №21 (OSPF)](HW_21/README.md)
 * [Домашняя работа №22 (VPN)](HW_22/README.md)
 * [Домашняя работа №23 (DNS)](HW_23/README.md)
 * [Домашняя работа №24 (Vlan and Bonds)](HW_24/README.md)
