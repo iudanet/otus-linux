@@ -79,7 +79,13 @@ Vagrant.configure("2") do |config|
                       "testClient1",
                       "testServer2",
                       "testClient2"
-                        ]
+                        ],
+                "isolated" => [  
+                  "testServer1",
+                  "testClient1",
+                  "testServer2",
+                  "testClient2"
+                    ]
             }
             ansible.become = true
             ansible.host_key_checking = false

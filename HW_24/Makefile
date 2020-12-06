@@ -15,11 +15,9 @@ stop::
 up::
 	@vagrant up
 test::
-	@echo "############## RUN TEST  SYNC TRACE"
-	@echo "## R2"
-	@vagrant ssh r2 -c "ip route"
-	@vagrant ssh r2 -c "mtr -n -r -c 1 1.1.1.30"
+	@echo "############## RUN TEST VLAN ISOLATED"
+	@echo "Run testClient1"
+	@vagrant ssh testClient1 -c "fping -q 10.10.10.1 10.10.10.254"
+	@echo "Run testClient2"
+	@vagrant ssh testClient2 -c "fping -q 10.10.10.1 10.10.10.254"
 
-	@echo "##R3"
-	@vagrant ssh r3 -c "ip route"
-	@vagrant ssh r3 -c "mtr -n -r -c 1 1.1.1.20"
