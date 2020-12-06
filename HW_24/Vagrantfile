@@ -5,26 +5,44 @@
 
 MACHINES = {
 
-  :r1 => {
+  :inetRouter => {
     :box_name => "centos/7",
     :net => [
-                {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
-                {ip: '192.168.255.5', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"}
+      { adapter: 2, virtualbox__intnet: "teaming"},
+      { adapter: 3, virtualbox__intnet: "teaming"}
             ]
   },
   
-  :r2 => {
+  :centralRouter => {
     :box_name => "centos/7",
     :net => [
-              {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
-              {ip: '192.168.255.9', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
+      { adapter: 2, virtualbox__intnet: "teaming"},
+      { adapter: 3, virtualbox__intnet: "teaming"},
+      { adapter: 4, virtualbox__intnet: "isolated"},
             ]
   },
-  :r3 => {
+  :testServer1 => {
     :box_name => "centos/7",
     :net => [
-              {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
-              {ip: '192.168.255.10', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testClient1 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testServer2 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testClient2 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
             ]
   }
 
@@ -55,15 +73,13 @@ Vagrant.configure("2") do |config|
             # ansible.verbose = "v"
             ansible.groups = { 
                 "all" => [  
-                      "r1",
-                      "r2",
-                      "r3"
-                        ],
-                "routers" => [
-                      "r1",
-                      "r2",
-                      "r3"
-                            ]
+                      "inetRouter",
+                      "centralRouter",
+                      "testServer1",
+                      "testClient1",
+                      "testServer2",
+                      "testClient2"
+                        ]
             }
             ansible.become = true
             ansible.host_key_checking = false

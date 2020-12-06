@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+
+    - name: yum install 
+      yum:
+        name:
+          - fping
+          - libselinux-python
+          - mtr
+          - tcpdump
+          - nc
+          - nmap
+
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+       - net.ipv6.conf.all.forwarding
+       - net.ipv4.conf.all.forwarding
+
+   
