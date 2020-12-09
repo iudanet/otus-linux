@@ -43,9 +43,10 @@
   tasks:
     - name: config eth1
       template:
-        dest: /etc/sysconfig/network-scripts/ifcfg-eth1 
-        src: template/ifcfg-eth1
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name }}" 
+        src: template/ifcfg-ethX
         mode: '0600'
+      loop: "{{ eth }}"
       notify:
        - restart network
 

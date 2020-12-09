@@ -1,0 +1,10 @@
+---
+eth:
+  - name: "eth3"
+    vlan: "100"
+    ip: ""
+    prefix: ""
+  - name: "eth3"
+    vlan: "101"
+    ip: ""
+    prefix: ""

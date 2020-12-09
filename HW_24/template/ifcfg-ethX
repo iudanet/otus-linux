@@ -1,5 +1,5 @@
 ONBOOT=yes 
 BOOTPROTO=none 
-DEVICE=eth1 
+DEVICE={{ item.name }}
 NM_CONTROLLED=no
 
