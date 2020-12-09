@@ -27,3 +27,30 @@ testClient2 <-> testServer2
 
 ## Описание работы
 
+### установка ansible
+
+```bash
+cd HW_24
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Запуск стенда
+
+```bash
+make up
+```
+
+### Запуск тестов
+
+```bash
+make test
+```
+
+Идет проверка:
+
+* Пинги изолированных vlan
+* Пинги интерфейсов с tiaming
+* Пинг после отключения интерфейсов с tiaming
