@@ -11,7 +11,7 @@
 - testServer1- 10.10.10.1
 - testServer2- 10.10.10.1
 
-равести вланами
+развести вланами
 testClient1 <-> testServer1
 testClient2 <-> testServer2
 
@@ -24,3 +24,6 @@ testClient2 <-> testServer2
 ```
 
 ![сеть](img/network.png)
+
+## Описание работы
+

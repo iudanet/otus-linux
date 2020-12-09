@@ -52,9 +52,33 @@
 
     - name: config eth1 vlan
       template:
-        dest: /etc/sysconfig/network-scripts/ifcfg-eth1.{{ item.vlan }}
+        dest: "/etc/sysconfig/network-scripts/ifcfg-eth1.{{ item.vlan }}"
         src: template/ifcfg-ethX.vlan
         mode: '0600'
       loop: "{{ eth }}"
+      notify:
+       - restart network
+- hosts: teaming
+  become: true
+  handlers:
+  - name: restart network
+    systemd:
+      name: network
+      state: restarted
+  tasks:
+    - name: config teaming
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-team0" 
+        src: template/ifcfg-team0
+        mode: '0600'
+      notify:
+       - restart network
+
+    - name: config eth1 vlan
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name }}"
+        src: template/ifcfg-team-ethX
+        mode: '0600'
+      loop: "{{ team.interfase }}"
       notify:
        - restart network

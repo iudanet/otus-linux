@@ -86,7 +86,11 @@ Vagrant.configure("2") do |config|
                   "testServer2",
                   "testClient2",
                   "centralRouter"
-                    ]
+                    ],
+                "teaming" => [
+                  "centralRouter",
+                  "inetRouter"
+                ]
             }
             ansible.become = true
             ansible.host_key_checking = false
