@@ -46,3 +46,29 @@ A Bind's DNS lab with Vagrant and Ansible, based on CentOS 7.
     * used to test the env, runs rndc and nsupdate
   * zone transfer: TSIG key
 ```
+
+## Описание
+
+### Запуск стенда
+
+- установка Ansible
+
+    ```bash
+    cd HW_20
+    python3.8 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+
+- Запуск виртуальных машин и настройка окружения.
+
+    ```bash
+    make install
+    ```
+
+- Запуск теста доступности. Проверяет dig с клиента_1 и клиента_2, ошибки не выдает, но по выводу можно понять работает стенд как надо или нет.
+
+    ```bash
+    make test
+    ```
