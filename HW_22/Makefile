@@ -14,6 +14,14 @@ stop::
 	@vagrant destroy -f
 up::
 	@vagrant up
+
+install-tap:: up
+	@ansible-playbook -e vpn_mode=tap -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yaml 
+
+install-tun:: up 
+	@ansible-playbook -e vpn_mode=tun -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yaml 
+
+
 test::
 	@echo "############## RUN TEST  SYNC TRACE"
 	@echo "## R2"

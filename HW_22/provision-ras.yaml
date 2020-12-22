@@ -24,7 +24,13 @@
       
 - hosts: server
   become: true
-  tasks:   
+  tasks:
+    - name: yum install 
+      yum:
+        name:
+          - easy-rsa
+
+
     - name: config server conf
       template:
         dest: "/etc/openvpn/server.conf" 
