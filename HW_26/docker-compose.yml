@@ -1,0 +1,14 @@
+version: "2.4"
+
+services:
+  flask:
+    image: iudanet/flask-realworld-example-app:0.1
+    # ports:
+    #   - "8080:5000"
+    command: flask run --host=0.0.0.0 --with-threads
+  react:
+    image: iudanet/react-redux-realworld-example-app:0.2
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
