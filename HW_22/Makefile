@@ -10,10 +10,10 @@ up::
 	@vagrant up
 
 install-tap:: up
-	@ansible-playbook -e vpn_mode=tap -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yaml 
+	@ansible-playbook -e vpn_mode=tap -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision-tun.yaml 
 
 install-tun:: up 
-	@ansible-playbook -e vpn_mode=tun -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision.yaml 
+	@ansible-playbook -e vpn_mode=tun -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provision-tun.yaml 
 
-add-client-openvpn-ubuntu::
-	nmcli connection import type openvpn file template/client-01.ovpn
+openvpn-client-start::
+	sudo openvpn --config template/client-01.ovpn
