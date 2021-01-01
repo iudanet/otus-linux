@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install epel
+      yum:
+        name:
+          - epel-release
+
+    - name: install docker
+      yum:
+        name:
+          - docker

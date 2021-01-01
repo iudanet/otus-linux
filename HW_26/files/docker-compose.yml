@@ -8,7 +8,7 @@ services:
   react:
     image: iudanet/react-redux-realworld-example-app:latest
     ports:
-      - "80:80"
+      - "8081:8081"
       - "8080:8080"
     volumes:
       - ./nginx:/etc/nginx/conf.d
