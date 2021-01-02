@@ -32,6 +32,27 @@ vagrant стэнд с проброшенными на локалхост пор�
 
 Проэкты разворачиваются через docker-compose
 
-* http://localhost (React + flask)
-* http://localhost:8080 (wordpres)
+На хостовой машине:
 
+* http://localhost:8080 - Wordpres
+* http://localhost:8081 - React + Flask
+
+### Установка Ansible
+
+```bash
+cd HW_26
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Запуск проекта
+
+```bash
+source venv/bin/activate # Окружение с Ansible
+make up # Запуск загранта и провижинига
+```
+
+* http://localhost:8080 - Wordpres
+* http://localhost:8081 - React + Flask
