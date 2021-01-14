@@ -1,0 +1,5 @@
+---
+# tasks file for master-setup
+- name: master-setup
+  debug:
+    msg: "master-setup!"

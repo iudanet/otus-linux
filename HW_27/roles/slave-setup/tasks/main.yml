@@ -1,0 +1,5 @@
+---
+# tasks file for slave-setup
+- name: slave-setup
+  debug:
+    msg: "slave-setup!"

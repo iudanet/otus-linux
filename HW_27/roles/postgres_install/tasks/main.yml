@@ -1,0 +1,5 @@
+---
+# tasks file for postgres_install
+- name: postgres_install
+  debug:
+    msg: "postgres_install!"

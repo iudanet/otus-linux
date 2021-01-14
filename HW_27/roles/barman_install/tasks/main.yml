@@ -1,0 +1,5 @@
+---
+# tasks file for barman_install
+- name: barman_install
+  debug:
+    msg: "barman_install!"
