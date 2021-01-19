@@ -1,5 +1,32 @@
 ---
 # tasks file for master-setup
-- name: master-setup
-  debug:
-    msg: "master-setup!"
+- name: Initialize the Database
+  command: /usr/pgsql-11/bin/postgresql-11-setup initdb
+  args:
+    creates: /var/lib/pgsql/11/data/postgresql.conf
+
+- name: config master postgresql.conf
+  ansible.builtin.template:
+    src: postgresql.conf.j2
+    dest: /var/lib/pgsql/11/data/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify:
+    - restart postgres
+
+- name: config master
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/11/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify:
+    - restart postgres
+
+- name: postgresql enable and start
+  systemd:
+    name: postgresql-11
+    state: started
+    enabled: yes
