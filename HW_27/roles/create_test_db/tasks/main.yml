@@ -3,3 +3,8 @@
 - name: create_test_db
   debug:
     msg: "create_test_db!"
+
+- name: create db otus
+  become_user: postgres
+  community.general.postgresql_db:
+    name: otus
