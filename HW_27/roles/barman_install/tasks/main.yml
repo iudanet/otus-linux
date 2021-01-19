@@ -3,3 +3,14 @@
 - name: barman_install
   debug:
     msg: "barman_install!"
+
+
+- name: install epel
+  yum:
+    name: epel-release
+    state: present
+
+- name: install barman
+  yum:
+    name: "{{ barman_packages }}"
+    state: present
