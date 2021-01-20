@@ -9,7 +9,7 @@
 
 
 - name: Установка postgres11
-  hosts: master, slave
+  hosts: master, slave, barman
   become: yes
   roles:
     - postgres_install
