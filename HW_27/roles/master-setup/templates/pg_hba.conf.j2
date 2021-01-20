@@ -90,5 +90,7 @@ host    replication     all             127.0.0.1/32            ident
 host    replication     all             ::1/128                 ident
 host    replication     all             {{ pg_master_ip }}/32         trust
 host    replication     all             {{ pg_slave_ip }}/32         trust
+host    replication     all             {{ barman_ip }}/32         trust
+
 
 
