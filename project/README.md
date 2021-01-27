@@ -17,9 +17,7 @@
 
 ## Запуск проекта
 
-* Стенд разворачивается около 25 минут
 * vault pass ```otus2021```
-*
 
 ## Описсание
 
@@ -39,10 +37,9 @@
   * [http://grafana.otus.iudanet.com]
   * [http://prom.otus.iudanet.com]
   * [http://alerts.otus.iudanet.com]
-* Пароль от grafana ```otus:Otus2021```
 * На хостах установлен  node_exporter  для сбора метрик
 * в grafana длбавлен дашборд для метрик node_exporter
-* Алерты шлются в канал slack
+* Алерты шлются в канал slak
 
 ### Фаервол
 
@@ -68,21 +65,17 @@
   * 3000/tcp grafana web
   * 9093/tcp alertmanager web
 
+
+
 ### резервное копирование
 
 * для бекапов файлов используется ```borgbackup```
-  * сохраняются катологи
-    * "/etc"
-    * "/root"
-    * "/home"
-    * "/opt"
 * для бекапов postgres используется ```barman``` в режиме стриминга
 
 ### Логирование
 
 * Используется rsyslog
-* Все логи с хостов из syslog и journald передаются через rsyslog на сервер `log`
-* сервер `log` принимает логи и раскладывает их по шаблону ```/var/log/rsyslog/%FROMHOST-IP%/%$year%-%$month%-%$day%/%PROGRAMNAME%.log```
+* Вселоги с хостов из syslog и journald передаетюся через rsyslog на сервер ```log```
+* сервер log принимает логи и раскладывает их по шаблону ```/var/log/rsyslog/%FROMHOST-IP%/%$year%-%$month%-%$day%/%PROGRAMNAME%.log```
 * Postgres пишет логи в локальный syslog
 * nginx пишет логи локально и в удаленный syslog server
-* django пишет логи в `journald` с тегом `django`
