@@ -24,7 +24,6 @@
   roles:
     - cloudalchemy.prometheus
     - cloudalchemy.grafana
-    - cloudalchemy.alertmanager
 
 - name: Настройка сервера логов
   hosts: log
