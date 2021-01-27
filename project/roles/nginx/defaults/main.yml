@@ -1,5 +1,2 @@
 ---
 # defaults file for nginx
-nginx_ssl:
-  - file: test.key
-    content: "private_content"
