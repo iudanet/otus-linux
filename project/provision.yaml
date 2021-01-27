@@ -7,12 +7,6 @@
       debug:
         msg: "Hello!"
 
-- name: базовая настройка
-  hosts: all
-  become: yes
-  roles:
-    - base
-
 - name: Настройка сервера логов
   hosts: log
   become: yes
