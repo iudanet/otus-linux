@@ -15,7 +15,7 @@
 #     zone: "{{ item.zone }}"
 #     interface: "{{ item.eth }}"
 #     permanent: yes
-#     state: enabled
+#     state: disabled
   #  loop:  "{{ firewalld_zone_eth }}"
 #   notify: reload firewalld
 
