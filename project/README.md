@@ -59,7 +59,7 @@ make install
 
 ### Мониторинг
 
-* Развернут стек prometheus * alertmanager * grafana
+* Развернут стек prometheus alertmanager grafana
 * домены
   * [http://grafana.otus.iudanet.com]
   * [http://prom.otus.iudanet.com]
