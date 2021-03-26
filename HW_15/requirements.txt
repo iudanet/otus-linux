@@ -13,7 +13,7 @@ pathspec==0.8.0
 pycparser==2.20
 Pygments==2.7.1
 pyparsing==2.4.7
-PyYAML==5.3.1
+PyYAML==5.4
 rich==7.1.0
 ruamel.yaml==0.16.12
 ruamel.yaml.clib==0.2.2
